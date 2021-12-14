@@ -14,6 +14,17 @@ message Pharmacy {
   string outros = 9;
 }
 
+message UpdatePharmacyData {
+  int32 id = 1;
+  string logo = 2;
+  string nome = 3;
+  string endereco = 4;
+  string horarioDeFuncionamento = 5;
+  string responsavel = 6;
+  string telefone = 7;
+  string outros = 8;
+}
+
 message CreatePharmacyRequest {
   Pharmacy pharmacy = 1;
 }
@@ -29,11 +40,14 @@ message GetPharmacyByIdRequest {
 
 message UpdatePharmacyDataRequest {
   int32 id = 1;
-  Pharmacy pharmacy = 2;
+  UpdatePharmacyData pharmacy = 2;
 }
 
 message PharmacyResponse {
   Pharmacy pharmacy = 1;
+}
+message UpdatePharmacyDataResponse {
+  UpdatePharmacyDataRequest pharmacy = 1;
 }
 
 message PharmacysListResponse {
@@ -80,7 +94,7 @@ service PharmacyService {
   rpc createPharmacy(CreatePharmacyRequest) returns (PharmacyResponse) {};
   rpc getPharmacyByNameAndCNPJ(GetPharmacyByNameAndCNPJRequest) returns (PharmacyResponse) {};
   rpc getAllPharmacys(Empty) returns (PharmacysListResponse) {};
-  rpc updatePharmacyData(Pharmacy) returns (Pharmacy) {};
+  rpc updatePharmacyData(UpdatePharmacyDataRequest) returns (PharmacyResponse) {};
   rpc deletePharmacy(GetPharmacyByIdRequest) returns (Empty) {};
 }
 
