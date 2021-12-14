@@ -1,5 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 
+import { promisify } from 'util';
+import fileSystem from 'fs';
+import path from 'path';
+
 const prisma = new PrismaClient();
 
 export async function createPharmacy(call: any, callback: any) {
@@ -70,36 +74,32 @@ export async function getAllPharmacys(call: any, callback: any) {
 }
 
 export async function updatePharmacyData(call: any, callback: any) {
-  console.log(call.request);
-
   const { 
     id,
     logo,
     nome,
-    cnpj,
     endereco,
     horarioDeFuncionamento,
     responsavel,
     telefone,
     outros,
-  } = call.request;
+  } = call.request.pharmacy;
 
   try {
-    const cnpjAlreadyExistis = await prisma.pharmacy.findFirst({
-      where: { cnpj },
-      select: { cnpj: true }
-    });
+    const logoInDataBase = await prisma.pharmacy.findFirst({
+      where: { id },
+      select: { logo: true }
+    })
 
-    if (cnpjAlreadyExistis) {
-      return callback(new Error('Esse CNPJ já existe.'), null);
-    }
+    promisify(fileSystem.unlink)(path.resolve(
+      __dirname, '..', '..', '..', '..', 'api', `uploads/${logoInDataBase?.logo}`,
+    ));
 
     const pharmacy = await prisma.pharmacy.update({
       where: { id },
       data: {
         logo,
         nome,
-        cnpj,
         endereco,
         horarioDeFuncionamento,
         responsavel,
