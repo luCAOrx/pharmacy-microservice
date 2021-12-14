@@ -14,7 +14,7 @@ import {
 
 import {
   createSubsidiary,
-  getSubsidiaryByNameAndCNPJ,
+  getSubsidiaryByName,
   getAllSubsidiarys,
   updateSubsidiaryData,
   deleteSubsidiary
@@ -46,7 +46,7 @@ server.addService(pharmacy.PharmacyService.service, {
 
 server.addService(pharmacy.SubsidiaryService.service, {
   createSubsidiary,
-  getSubsidiaryByNameAndCNPJ,
+  getSubsidiaryByName,
   getAllSubsidiarys,
   updateSubsidiaryData,
   deleteSubsidiary
