@@ -47,15 +47,18 @@ export async function createPharmacy(call: any, callback: any) {
   }
 }
 
-export async function getPharmacyByNameAndCNPJ(call: any, callback: any) {
-  const { nome, cnpj } = call.request;
+export async function getPharmacyByName(call: any, callback: any) {
+  const { nome, page } = call.request;
 
   try {
-    const pharmacy = await prisma.pharmacy.findFirst({
-      where: { nome, cnpj }
+    const pharmacys = await prisma.pharmacy.findMany({
+      where: { nome },
+      orderBy: { id: 'desc' },
+      take: 5,
+      skip: (Number(page) - 1) * 5
     });
     
-    return callback(null, { pharmacy });
+    return callback(null, { pharmacys });
   } catch (error) {
     return callback(error, null);
   }
