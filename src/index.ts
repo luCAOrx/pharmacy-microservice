@@ -6,7 +6,7 @@ import path from 'path';
 
 import {
   createPharmacy,
-  getPharmacyByNameAndCNPJ,
+  getPharmacyByName,
   getAllPharmacys,
   updatePharmacyData,
   deletePharmacy
@@ -38,7 +38,7 @@ const server = new Server();
 
 server.addService(pharmacy.PharmacyService.service, {
   createPharmacy,
-  getPharmacyByNameAndCNPJ,
+  getPharmacyByName,
   getAllPharmacys,
   updatePharmacyData,
   deletePharmacy
