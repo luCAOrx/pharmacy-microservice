@@ -26,7 +26,8 @@ export async function createSubsidiary(call: any, callback: any) {
     });
 
     const subsidiaryLimit = await prisma.subsidiary.findMany({
-      select: { id: true }
+      where: { farmacia_id },
+      select: { farmacia_id: true }
     });
 
     if (cnpjAlreadyExistis) {
@@ -34,7 +35,7 @@ export async function createSubsidiary(call: any, callback: any) {
     }
 
     if (subsidiaryLimit.length > 2) {
-      return callback(new Error('Não pode criar mais que 3 filias.'), null);
+      return callback(new Error('A farmácia sede não pode ter mais que 3 filias.'), null);
     }
     
     const subsidiary = await prisma.subsidiary.create({
