@@ -65,9 +65,13 @@ export async function getPharmacyByName(call: any, callback: any) {
 }
 
 export async function getAllPharmacys(call: any, callback: any) {
+  const { page } = call.request;
+  
   try {
     const pharmacys = await prisma.pharmacy.findMany({
-      orderBy: { id: 'desc' }
+      orderBy: { id: 'desc' },
+      take: 5,
+      skip: (Number(page) - 1) * 5
     });
 
     return callback(null, { pharmacys })
