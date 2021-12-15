@@ -59,12 +59,14 @@ export async function createSubsidiary(call: any, callback: any) {
 }
 
 export async function getSubsidiaryByName(call: any, callback: any) {
-  const { nome } = call.request;
+  const { nome, page } = call.request;
 
   try {
     const subsidiarys = await prisma.subsidiary.findMany({
       where: { nome },
-      orderBy: { id: 'desc' }
+      orderBy: { id: 'desc' },
+      take: 5,
+      skip: (Number(page) - 1) * 5
     });
     
     return callback(null, { subsidiarys });
