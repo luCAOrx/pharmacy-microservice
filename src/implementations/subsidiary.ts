@@ -76,11 +76,13 @@ export async function getSubsidiaryByName(call: any, callback: any) {
 }
 
 export async function getAllSubsidiarys(call: any, callback: any) {
+  const { page } = call.request;
+
   try {
     const subsidiarys = await prisma.subsidiary.findMany({
-      orderBy: {
-        id: 'asc'
-      }
+      orderBy: { id: 'desc' },
+      take: 5,
+      skip: (Number(page) - 1) * 5
     });
 
     callback(null, { subsidiarys })
