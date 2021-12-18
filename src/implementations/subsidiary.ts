@@ -1,10 +1,24 @@
 import { PrismaClient } from '@prisma/client'
 
+import aws from 'aws-sdk';
+
+import multerS3 from 'multer-s3';
+
 import { promisify } from 'util';
 import fileSystem from 'fs';
 import path from 'path';
+import { subsidiaryAmazonS3Config } from '../config/subsidiaryAmazonS3';
 
 const prisma = new PrismaClient();
+
+multerS3({
+  s3: new aws.S3(subsidiaryAmazonS3Config),
+  bucket: String(process.env.AWS_SUBSIDIARY_BUCKET_NAME),
+  contentType: multerS3.AUTO_CONTENT_TYPE,
+  acl: 'public-read',
+});
+
+const s3 = new aws.S3(subsidiaryAmazonS3Config);
 
 export async function createSubsidiary(call: any, callback: any) {
   const { 
@@ -31,10 +45,32 @@ export async function createSubsidiary(call: any, callback: any) {
     });
 
     if (cnpjAlreadyExistis) {
+      if (process.env.STORAGE_TYPE === 'local') {
+        promisify(fileSystem.unlink)(path.resolve(
+          __dirname, '..', '..', '..', '..', 'api', 'uploads', `subsidiary/${logo}`,
+        ));
+      } else {
+        s3.deleteObject({
+          Bucket: String(process.env.AWS_SUBSIDIARY_BUCKET_NAME),
+          Key: logo,
+        }).promise();
+      }
+
       return callback(new Error('Esse CNPJ já existe.'), null);
     }
 
     if (subsidiaryLimit.length > 2) {
+      if (process.env.STORAGE_TYPE === 'local') {
+        promisify(fileSystem.unlink)(path.resolve(
+          __dirname, '..', '..', '..', '..', 'api', 'uploads', `subsidiary/${logo}`,
+        ));
+      } else {
+        s3.deleteObject({
+          Bucket: String(process.env.AWS_SUBSIDIARY_BUCKET_NAME),
+          Key: logo,
+        }).promise();
+      }
+
       return callback(new Error('A farmácia sede não pode ter mais que 3 filias.'), null);
     }
     
@@ -54,6 +90,17 @@ export async function createSubsidiary(call: any, callback: any) {
 
     return callback(null, { subsidiary });
   } catch (error) {
+    if (process.env.STORAGE_TYPE === 'local') {
+      promisify(fileSystem.unlink)(path.resolve(
+        __dirname, '..', '..', '..', '..', 'api', 'uploads', `subsidiary/${logo}`,
+      ));
+    } else {
+      s3.deleteObject({
+        Bucket: String(process.env.AWS_SUBSIDIARY_BUCKET_NAME),
+        Key: logo,
+      }).promise();
+    }
+
     return callback(error, null);
   }
 }
@@ -109,9 +156,16 @@ export async function updateSubsidiaryData(call: any, callback: any) {
       select: { logo: true }
     })
 
-    promisify(fileSystem.unlink)(path.resolve(
-      __dirname, '..', '..', '..', '..', 'api', `uploads/${logoInDataBase?.logo}`,
-    ));
+    if (process.env.STORAGE_TYPE === 'local') {
+      promisify(fileSystem.unlink)(path.resolve(
+        __dirname, '..', '..', '..', '..', 'api', 'uploads', `subsidiary/${logoInDataBase?.logo}`,
+      ));
+    } else {
+      s3.deleteObject({
+        Bucket: String(process.env.AWS_SUBSIDIARY_BUCKET_NAME),
+        Key: String(logoInDataBase?.logo),
+      }).promise();
+    }
 
     const subsidiary = await prisma.subsidiary.update({
       where: { id },
@@ -128,6 +182,22 @@ export async function updateSubsidiaryData(call: any, callback: any) {
 
     return callback(null, { subsidiary });
   } catch (error) {
+    const logoInDataBase = await prisma.subsidiary.findFirst({
+      where: { id },
+      select: { logo: true }
+    })
+
+    if (process.env.STORAGE_TYPE === 'local') {
+      promisify(fileSystem.unlink)(path.resolve(
+        __dirname, '..', '..', '..', '..', 'api', 'uploads', `subsidiary/${logoInDataBase?.logo}`,
+      ));
+    } else {
+      s3.deleteObject({
+        Bucket: String(process.env.AWS_SUBSIDIARY_BUCKET_NAME),
+        Key: String(logoInDataBase?.logo),
+      }).promise();
+    };
+
     return callback(error, null);
   }
 }
@@ -136,6 +206,22 @@ export async function deleteSubsidiary(call: any, callback: any) {
   const { id } = call.request;
  
   try {
+    const logoInDataBase = await prisma.subsidiary.findFirst({
+      where: { id },
+      select: { logo: true }
+    })
+
+    if (process.env.STORAGE_TYPE === 'local') {
+      promisify(fileSystem.unlink)(path.resolve(
+        __dirname, '..', '..', '..', '..', 'api', 'uploads', `subsidiary/${logoInDataBase?.logo}`,
+      ));
+    } else {
+      s3.deleteObject({
+        Bucket: String(process.env.AWS_SUBSIDIARY_BUCKET_NAME),
+        Key: String(logoInDataBase?.logo),
+      }).promise();
+    };
+    
     await prisma.subsidiary.delete({
       where: { id }
     })
