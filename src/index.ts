@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { loadPackageDefinition, Server, ServerCredentials } from '@grpc/grpc-js';
 
 import { loadSync } from '@grpc/proto-loader';
@@ -52,7 +54,7 @@ server.addService(pharmacy.SubsidiaryService.service, {
   deleteSubsidiary
 });
 
-server.bindAsync('0.0.0.0:50051', ServerCredentials.createInsecure(), () => {
+server.bindAsync(String(process.env.GRPC_PHARMACY_SERVER_URL), ServerCredentials.createInsecure(), () => {
   server.start();
 });
 
