@@ -4,7 +4,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import * as grpc from "grpc";
+import * as grpc from "@grpc/grpc-js";
 import * as pharmacy_pb from "./pharmacy_pb";
 
 interface IPharmacyServiceService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
@@ -63,7 +63,7 @@ interface IPharmacyServiceService_IdeletePharmacy extends grpc.MethodDefinition<
 
 export const PharmacyServiceService: IPharmacyServiceService;
 
-export interface IPharmacyServiceServer {
+export interface IPharmacyServiceServer extends grpc.UntypedServiceImplementation {
     createPharmacy: grpc.handleUnaryCall<pharmacy_pb.CreatePharmacyRequest, pharmacy_pb.PharmacyResponse>;
     getPharmacyByName: grpc.handleUnaryCall<pharmacy_pb.GetPharmacyByNameRequest, pharmacy_pb.PharmacysListResponse>;
     getAllPharmacys: grpc.handleUnaryCall<pharmacy_pb.GetAllPharmacysRequest, pharmacy_pb.PharmacysListResponse>;
@@ -90,7 +90,7 @@ export interface IPharmacyServiceClient {
 }
 
 export class PharmacyServiceClient extends grpc.Client implements IPharmacyServiceClient {
-    constructor(address: string, credentials: grpc.ChannelCredentials, options?: object);
+    constructor(address: string, credentials: grpc.ChannelCredentials, options?: Partial<grpc.ClientOptions>);
     public createPharmacy(request: pharmacy_pb.CreatePharmacyRequest, callback: (error: grpc.ServiceError | null, response: pharmacy_pb.PharmacyResponse) => void): grpc.ClientUnaryCall;
     public createPharmacy(request: pharmacy_pb.CreatePharmacyRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pharmacy_pb.PharmacyResponse) => void): grpc.ClientUnaryCall;
     public createPharmacy(request: pharmacy_pb.CreatePharmacyRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pharmacy_pb.PharmacyResponse) => void): grpc.ClientUnaryCall;
@@ -164,7 +164,7 @@ interface ISubsidiaryServiceService_IdeleteSubsidiary extends grpc.MethodDefinit
 
 export const SubsidiaryServiceService: ISubsidiaryServiceService;
 
-export interface ISubsidiaryServiceServer {
+export interface ISubsidiaryServiceServer extends grpc.UntypedServiceImplementation {
     createSubsidiary: grpc.handleUnaryCall<pharmacy_pb.CreateSubsidiaryRequest, pharmacy_pb.SubsidiaryResponse>;
     getSubsidiaryByName: grpc.handleUnaryCall<pharmacy_pb.GetSubsidiaryByNameRequest, pharmacy_pb.SubsidiarysListResponse>;
     getAllSubsidiarys: grpc.handleUnaryCall<pharmacy_pb.GetAllSubsidiarysRequest, pharmacy_pb.SubsidiarysListResponse>;
@@ -191,7 +191,7 @@ export interface ISubsidiaryServiceClient {
 }
 
 export class SubsidiaryServiceClient extends grpc.Client implements ISubsidiaryServiceClient {
-    constructor(address: string, credentials: grpc.ChannelCredentials, options?: object);
+    constructor(address: string, credentials: grpc.ChannelCredentials, options?: Partial<grpc.ClientOptions>);
     public createSubsidiary(request: pharmacy_pb.CreateSubsidiaryRequest, callback: (error: grpc.ServiceError | null, response: pharmacy_pb.SubsidiaryResponse) => void): grpc.ClientUnaryCall;
     public createSubsidiary(request: pharmacy_pb.CreateSubsidiaryRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pharmacy_pb.SubsidiaryResponse) => void): grpc.ClientUnaryCall;
     public createSubsidiary(request: pharmacy_pb.CreateSubsidiaryRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pharmacy_pb.SubsidiaryResponse) => void): grpc.ClientUnaryCall;
